@@ -1,0 +1,224 @@
+openapi: 3.0.0
+servers:
+  - description: Cluster Endpoint
+    url: /api
+info:
+  description: Patient Treatment Tracking System API
+  version: "1.0.0"
+  title: Patient Treatment API
+  contact:
+    email: xkarunnyi@stuba.sk
+  license:
+    name: CC BY 4.0
+    url: "https://creativecommons.org/licenses/by/4.0/"
+tags:
+- name: patients
+  description: Patient Treatment API
+paths:
+  "/patients":
+    get:
+      tags:
+        - patients
+      summary: Provides the list of patients
+      operationId: getPatients
+      description: Get list of all patients
+      responses:
+        "200":
+          description: List of patients
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Patient"
+              examples:
+                response:
+                  $ref: "#/components/examples/PatientsExample"
+    post:
+      tags:
+        - patients
+      summary: Creates a new patient
+      operationId: createPatient
+      description: Create a new patient
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatientInput"
+      responses:
+        "201":
+          description: Patient created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Patient"
+  "/patients/{patientId}":
+    get:
+      tags:
+        - patients
+      summary: Get patient details
+      operationId: getPatient
+      description: Get details of a specific patient
+      parameters:
+        - in: path
+          name: patientId
+          description: ID of the patient
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Patient details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Patient"
+        "404":
+          description: Patient not found
+    put:
+      tags:
+        - patients
+      summary: Update patient details
+      operationId: updatePatient
+      description: Update details of a specific patient
+      parameters:
+        - in: path
+          name: patientId
+          description: ID of the patient
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatientInput"
+      responses:
+        "200":
+          description: Patient updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Patient"
+        "404":
+          description: Patient not found
+    delete:
+      tags:
+        - patients
+      summary: Archive a patient
+      operationId: archivePatient
+      description: Archive a specific patient
+      parameters:
+        - in: path
+          name: patientId
+          description: ID of the patient
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Patient archived
+        "404":
+          description: Patient not found
+components:
+  schemas:
+    Patient:
+      type: object
+      required: [id, name, condition, status, doctorId]
+      properties:
+        id:
+          type: string
+          example: "1"
+          description: Unique identifier of the patient
+        name:
+          type: string
+          example: "John Doe"
+          description: Name of the patient
+        condition:
+          type: string
+          example: "Flu"
+          description: Medical condition of the patient
+        diagnosisDate:
+          type: string
+          format: date
+          example: "2023-01-15"
+          description: Date when the diagnosis was made
+        treatmentStartDate:
+          type: string
+          format: date
+          example: "2023-01-16"
+          description: Date when the treatment started
+        expectedCompletionDate:
+          type: string
+          format: date
+          example: "2023-01-30"
+          description: Expected date of treatment completion
+        status:
+          type: string
+          enum: [new, diagnosed, in-treatment, completed]
+          example: "in-treatment"
+          description: Current status of the patient
+        doctorId:
+          type: string
+          example: "doctor1"
+          description: ID of the doctor assigned to the patient
+    PatientInput:
+      type: object
+      required: [name, condition]
+      properties:
+        name:
+          type: string
+          example: "John Doe"
+          description: Name of the patient
+        condition:
+          type: string
+          example: "Flu"
+          description: Medical condition of the patient
+        diagnosisDate:
+          type: string
+          format: date
+          example: "2023-01-15"
+          description: Date when the diagnosis was made
+        treatmentStartDate:
+          type: string
+          format: date
+          example: "2023-01-16"
+          description: Date when the treatment started
+        expectedCompletionDate:
+          type: string
+          format: date
+          example: "2023-01-30"
+          description: Expected date of treatment completion
+        status:
+          type: string
+          enum: [new, diagnosed, in-treatment, completed]
+          example: "in-treatment"
+          description: Current status of the patient
+  examples:
+    PatientsExample:
+      summary: List of patients
+      description: Example list of patients
+      value:
+      - id: "1"
+        name: "John Doe"
+        condition: "Flu"
+        diagnosisDate: "2023-01-15"
+        treatmentStartDate: "2023-01-16"
+        expectedCompletionDate: "2023-01-30"
+        status: "in-treatment"
+        doctorId: "doctor1"
+      - id: "2"
+        name: "Jane Smith"
+        condition: "Broken arm"
+        diagnosisDate: "2023-02-10"
+        treatmentStartDate: "2023-02-11"
+        expectedCompletionDate: "2023-03-25"
+        status: "in-treatment"
+        doctorId: "doctor1"
+      - id: "3"
+        name: "Bob Johnson"
+        condition: "Headache"
+        status: "new"
+        doctorId: "doctor1"
