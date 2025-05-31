@@ -1,0 +1,5 @@
+internal/ambulance_wl/README.md
+internal/ambulance_wl/api_patients.go
+internal/ambulance_wl/model_patient.go
+internal/ambulance_wl/model_patient_input.go
+internal/ambulance_wl/routers.go
