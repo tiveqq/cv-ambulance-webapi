@@ -45,7 +45,7 @@ func main() {
 
 	// Start the server
 	log.Printf("Server listening on port %s", port)
-	engine.GET("/openapi", api.HandleOpenApi)
+	//engine.GET("/openapi", api.HandleOpenApi)
 	if err := engine.Run(":" + port); err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}
