@@ -31,7 +31,7 @@ jobs:
       uses: craicoverflow/openapi-generator-generate-action@v1.2.1
       with:
         generator: go-gin-server
-        input: api/ambulance-wl.openapi.yaml
+        input: api/ambulance-patients.openapi.yaml
         additional-properties: apiPath=internal/ambulance_wl,packageName=ambulance_wl,interfaceOnly=true
               
 
