@@ -16,7 +16,7 @@ ENTRYPOINT ["bash"]
 
 ############################################
 
-FROM golang:latest AS build
+FROM golang:1.24.1 AS build
 
 WORKDIR /app
 

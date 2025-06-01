@@ -28,10 +28,6 @@ func main() {
 	}
 	defer mongoService.Close()
 
-	// Initialize API handlers
-	patientsAPI := ambulance_wl.NewPatientsAPI(mongoService)
-	ambulanceConditionsAPI := ambulance_wl.NewAmbulanceConditionsApi()
-
 	// Initialize router
 	engine := gin.New()
 	engine.Use(gin.Recovery())
@@ -39,14 +35,17 @@ func main() {
 	// OpenAPI documentation
 	engine.GET("/openapi", api.HandleOpenApi)
 
+	handleFunctions := &ambulance_wl.ApiHandleFunctions{
+		PatientsAPI: ambulance_wl.NewPatientsAPI(mongoService),
+		//AmbulanceConditionsAPI: ambulance_wl.NewAmbulanceConditionsApi(),
+	}
+
 	// Initialize API routes
-	ambulance_wl.NewRouterWithGinEngine(engine, ambulance_wl.ApiHandleFunctions{
-		PatientsAPI:            patientsAPI,
-		AmbulanceConditionsAPI: ambulanceConditionsAPI,
-	})
+	ambulance_wl.NewRouterWithGinEngine(engine, *handleFunctions)
 
 	// Start the server
 	log.Printf("Server listening on port %s", port)
+	engine.GET("/openapi", api.HandleOpenApi)
 	if err := engine.Run(":" + port); err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}
