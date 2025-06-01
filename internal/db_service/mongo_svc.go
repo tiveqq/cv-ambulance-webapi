@@ -35,7 +35,7 @@ func NewMongoDBService() (*MongoDBService, error) {
 		if password == "" {
 			password = "example"
 		}
-		mongoURI = fmt.Sprintf("mongodb://%s:%s@localhost:27017", username, password)
+		mongoURI = fmt.Sprintf("mongodb://%s:%s@mongodb:27017", username, password)
 	}
 
 	dbName := os.Getenv("AMBULANCE_API_MONGODB_DATABASE")
