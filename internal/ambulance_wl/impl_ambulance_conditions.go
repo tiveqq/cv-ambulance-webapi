@@ -26,6 +26,18 @@ type implAmbulanceConditionsAPI struct {
 	conditions []Condition
 }
 
+func (o implAmbulanceConditionsAPI) GetConditions(c *gin.Context) {
+	c.JSON(http.StatusOK, o.conditions)
+}
+
+//type ApiHandleFunctions struct {
+//	// Routes for the PatientsAPI part of the API
+//	PatientsAPI PatientsAPI
+//
+//	// Routes for the AmbulanceConditionsAPI part of the API
+//	AmbulanceConditionsAPI AmbulanceConditionsAPI
+//}
+
 func NewAmbulanceConditionsApi() AmbulanceConditionsAPI {
 	// Initialize with some predefined conditions
 	conditions := []Condition{
@@ -64,8 +76,4 @@ func NewAmbulanceConditionsApi() AmbulanceConditionsAPI {
 	return &implAmbulanceConditionsAPI{
 		conditions: conditions,
 	}
-}
-
-func (o implAmbulanceConditionsAPI) GetConditions(c *gin.Context) {
-	c.JSON(http.StatusOK, o.conditions)
 }

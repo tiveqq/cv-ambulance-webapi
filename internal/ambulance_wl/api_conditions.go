@@ -1,8 +1,6 @@
 package ambulance_wl
 
-import (
-	"github.com/gin-gonic/gin"
-)
+import "github.com/gin-gonic/gin"
 
 // AmbulanceConditionsAPI defines the interface for ambulance conditions operations
 type AmbulanceConditionsAPI interface {
