@@ -42,7 +42,7 @@ func main() {
 	}))
 
 	// OpenAPI documentation
-	engine.GET("/openapi", api.HandleOpenApi)
+	//engine.GET("/openapi", api.HandleOpenApi)
 
 	handleFunctions := &ambulance_wl.ApiHandleFunctions{
 		PatientsAPI: ambulance_wl.NewPatientsAPI(mongoService),
@@ -54,7 +54,7 @@ func main() {
 
 	// Start the server
 	log.Printf("Server listening on port %s", port)
-	//engine.GET("/openapi", api.HandleOpenApi)
+	engine.GET("/openapi", api.HandleOpenApi)
 	if err := engine.Run(":" + port); err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}
