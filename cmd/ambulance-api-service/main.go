@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/tiveqq/cv-ambulance-webapi/api"
 	"github.com/tiveqq/cv-ambulance-webapi/internal/ambulance_wl"
@@ -31,6 +32,14 @@ func main() {
 	// Initialize router
 	engine := gin.New()
 	engine.Use(gin.Recovery())
+
+	engine.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost"}, // frontend origin
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+	}))
 
 	// OpenAPI documentation
 	engine.GET("/openapi", api.HandleOpenApi)

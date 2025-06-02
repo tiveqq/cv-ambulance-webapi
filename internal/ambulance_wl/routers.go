@@ -19,24 +19,19 @@ import (
 // Route is the information for every URI.
 type Route struct {
 	// Name is the name of this Route.
-	Name string
+	Name		string
 	// Method is the string for the HTTP method. ex) GET, POST etc..
-	Method string
+	Method		string
 	// Pattern is the pattern of the URI.
-	Pattern string
+	Pattern	 	string
 	// HandlerFunc is the handler function of this route.
-	HandlerFunc gin.HandlerFunc
+	HandlerFunc	gin.HandlerFunc
 }
 
-type ApiHandleFunctions struct {
-	PatientsAPI            PatientsAPI
-	AmbulanceConditionsAPI AmbulanceConditionsAPI
+// NewRouter returns a new router.
+func NewRouter(handleFunctions ApiHandleFunctions) *gin.Engine {
+	return NewRouterWithGinEngine(gin.Default(), handleFunctions)
 }
-
-//// NewRouter returns a new router.
-//func NewRouter(handleFunctions ApiHandleFunctions) *gin.Engine {
-//	return NewRouterWithGinEngine(gin.Default(), handleFunctions)
-//}
 
 // NewRouter add routes to existing gin engine.
 func NewRouterWithGinEngine(router *gin.Engine, handleFunctions ApiHandleFunctions) *gin.Engine {
@@ -66,9 +61,14 @@ func DefaultHandleFunc(c *gin.Context) {
 	c.String(http.StatusNotImplemented, "501 not implemented")
 }
 
+type ApiHandleFunctions struct {
+
+	// Routes for the PatientsAPI part of the API
+	PatientsAPI PatientsAPI
+}
+
 func getRoutes(handleFunctions ApiHandleFunctions) []Route {
-	return []Route{
-		// Patient routes
+	return []Route{ 
 		{
 			"ArchivePatient",
 			http.MethodDelete,
@@ -98,13 +98,6 @@ func getRoutes(handleFunctions ApiHandleFunctions) []Route {
 			http.MethodPut,
 			"/api/patients/:patientId",
 			handleFunctions.PatientsAPI.UpdatePatient,
-		},
-		// Conditions routes
-		{
-			"GetConditions",
-			http.MethodGet,
-			"/api/conditions",
-			handleFunctions.AmbulanceConditionsAPI.GetConditions,
 		},
 	}
 }
