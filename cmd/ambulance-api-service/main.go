@@ -22,12 +22,6 @@ func main() {
 		gin.SetMode(gin.DebugMode)
 	}
 
-	// Get base path from environment variable
-	basePath := os.Getenv("AMBULANCE_API_BASE_PATH")
-	if basePath == "" {
-		basePath = ""
-	}
-	log.Printf("Using base path: %s", basePath)
 
 	// Initialize MongoDB service
 	mongoService, err := db_service.NewMongoDBService()
@@ -57,11 +51,11 @@ func main() {
 	}
 
 	// Initialize API routes
-	ambulance_wl.NewRouterWithGinEngine(engine, *handleFunctions, basePath)
+	ambulance_wl.NewRouterWithGinEngine(engine, *handleFunctions)
 
 	// Start the server
 	log.Printf("Server listening on port %s", port)
-	engine.GET(basePath + "/openapi", api.HandleOpenApi)
+	engine.GET("/openapi", api.HandleOpenApi)
 	if err := engine.Run(":" + port); err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}

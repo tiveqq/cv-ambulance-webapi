@@ -30,12 +30,12 @@ type Route struct {
 
 // NewRouter returns a new router.
 func NewRouter(handleFunctions ApiHandleFunctions) *gin.Engine {
-	return NewRouterWithGinEngine(gin.Default(), handleFunctions, "")
+	return NewRouterWithGinEngine(gin.Default(), handleFunctions)
 }
 
 // NewRouter add routes to existing gin engine.
-func NewRouterWithGinEngine(router *gin.Engine, handleFunctions ApiHandleFunctions, basePath string) *gin.Engine {
-	for _, route := range getRoutes(handleFunctions, basePath) {
+func NewRouterWithGinEngine(router *gin.Engine, handleFunctions ApiHandleFunctions) *gin.Engine {
+	for _, route := range getRoutes(handleFunctions) {
 		if route.HandlerFunc == nil {
 			route.HandlerFunc = DefaultHandleFunc
 		}
@@ -67,41 +67,37 @@ type ApiHandleFunctions struct {
 	PatientsAPI PatientsAPI
 }
 
-func getRoutes(handleFunctions ApiHandleFunctions, basePath string) []Route {
-	// Ensure basePath doesn't end with a slash
-	if basePath != "" && basePath[len(basePath)-1] == '/' {
-		basePath = basePath[:len(basePath)-1]
-	}
+func getRoutes(handleFunctions ApiHandleFunctions) []Route {
 
 	return []Route{ 
 		{
 			"ArchivePatient",
 			http.MethodDelete,
-			basePath + "/api/patients/:patientId",
+			"/api/patients/:patientId",
 			handleFunctions.PatientsAPI.ArchivePatient,
 		},
 		{
 			"CreatePatient",
 			http.MethodPost,
-			basePath + "/api/patients",
+			"/api/patients",
 			handleFunctions.PatientsAPI.CreatePatient,
 		},
 		{
 			"GetPatient",
 			http.MethodGet,
-			basePath + "/api/patients/:patientId",
+			"/api/patients/:patientId",
 			handleFunctions.PatientsAPI.GetPatient,
 		},
 		{
 			"GetPatients",
 			http.MethodGet,
-			basePath + "/api/patients",
+			"/api/patients",
 			handleFunctions.PatientsAPI.GetPatients,
 		},
 		{
 			"UpdatePatient",
 			http.MethodPut,
-			basePath + "/api/patients/:patientId",
+			"/api/patients/:patientId",
 			handleFunctions.PatientsAPI.UpdatePatient,
 		},
 	}
