@@ -1,7 +1,9 @@
 openapi: 3.0.0
 servers:
-  - description: Cluster Endpoint
+  - description: Local Development
     url: /api
+  - description: Kubernetes Cluster
+    url: /fea/cv1-karunnyi-ambulance-ufe/api
 info:
   description: Patient Treatment Tracking System API
   version: "1.0.0"

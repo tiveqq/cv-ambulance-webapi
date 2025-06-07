@@ -66,6 +66,8 @@ spec:
               value: production
             - name: AMBULANCE_API_PORT
               value: "8080"
+            - name: AMBULANCE_API_BASE_PATH
+              value: "/fea/cv1-karunnyi-ambulance-ufe"
             - name: AMBULANCE_API_MONGODB_HOST
               value: mongodb
             - name: AMBULANCE_API_MONGODB_PORT
