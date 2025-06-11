@@ -132,35 +132,55 @@ func (s *MongoDBService) GetPatientByID(ctx context.Context, id string) (*ambula
 
 // CreatePatient creates a new patient
 func (s *MongoDBService) CreatePatient(ctx context.Context, patient ambulance_wl.PatientInput) (*ambulance_wl.Patient, error) {
-	// Generate a new ObjectID
-	objID := primitive.NewObjectID()
+	// Get the next patient ID as a number
+	nextID, err := s.getNextSequence(ctx, "patientid")
+	if err != nil {
+		return nil, err
+	}
 
-	// Create a new Patient from the input
+	// Convert the number to string
+	patientID := fmt.Sprintf("%d", nextID)
+
 	newPatient := ambulance_wl.Patient{
-		Id:                     objID.Hex(),
+		Id:                     patientID, // Use incremental string ID here
 		Name:                   patient.Name,
 		Condition:              patient.Condition,
 		DiagnosisDate:          patient.DiagnosisDate,
 		TreatmentStartDate:     patient.TreatmentStartDate,
 		ExpectedCompletionDate: patient.ExpectedCompletionDate,
 		Status:                 patient.Status,
-		// Set default values if needed
 	}
 
 	if newPatient.Status == "" {
 		newPatient.Status = "new"
 	}
 
-	// Set a default doctor ID if not provided
 	newPatient.DoctorId = "doctor1"
 
-	// Insert the patient into the database
-	_, err := s.collection.InsertOne(ctx, newPatient)
+	_, err = s.collection.InsertOne(ctx, newPatient)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create patient: %w", err)
 	}
 
 	return &newPatient, nil
+}
+
+func (s *MongoDBService) getNextSequence(ctx context.Context, name string) (int64, error) {
+	filter := bson.M{"_id": name}
+	update := bson.M{"$inc": bson.M{"seq": 1}}
+
+	opts := options.FindOneAndUpdate().SetUpsert(true).SetReturnDocument(options.After)
+
+	var result struct {
+		Seq int64 `bson:"seq"`
+	}
+
+	err := s.collection.Database().Collection("counters").FindOneAndUpdate(ctx, filter, update, opts).Decode(&result)
+	if err != nil {
+		return 0, fmt.Errorf("failed to get next sequence for %s: %w", name, err)
+	}
+
+	return result.Seq, nil
 }
 
 // UpdatePatient updates an existing patient
@@ -191,16 +211,8 @@ func (s *MongoDBService) UpdatePatient(ctx context.Context, id string, patient a
 		updatedPatient.Status = existingPatient.Status
 	}
 
-	// Update the patient in the database
-	objID, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		// If the ID is not a valid ObjectID, update by string ID
-		_, err = s.collection.ReplaceOne(ctx, bson.M{"id": id}, updatedPatient)
-	} else {
-		// Try to update by ObjectID
-		_, err = s.collection.ReplaceOne(ctx, bson.M{"_id": objID}, updatedPatient)
-	}
-
+	// Update the patient by custom "id" field
+	_, err = s.collection.ReplaceOne(ctx, bson.M{"id": id}, updatedPatient)
 	if err != nil {
 		return nil, fmt.Errorf("failed to update patient: %w", err)
 	}
@@ -226,15 +238,8 @@ func (s *MongoDBService) ArchivePatient(ctx context.Context, id string) error {
 		},
 	}
 
-	objID, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		// If the ID is not a valid ObjectID, update by string ID
-		_, err = s.collection.UpdateOne(ctx, bson.M{"id": id}, update)
-	} else {
-		// Try to update by ObjectID
-		_, err = s.collection.UpdateOne(ctx, bson.M{"_id": objID}, update)
-	}
-
+	// Update by custom "id" field
+	_, err = s.collection.UpdateOne(ctx, bson.M{"id": id}, update)
 	if err != nil {
 		return fmt.Errorf("failed to archive patient: %w", err)
 	}
